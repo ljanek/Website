@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cces on Lauren&#39;s Website</title>
+    <link>/tags/cces/</link>
+    <description>Recent content in Cces on Lauren&#39;s Website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Lauren Klepac</copyright>
+    <lastBuildDate>Sun, 30 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/cces/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Exploring the 2016 CCES</title>
+      <link>/2018/12/30/2019-01-02-cces/</link>
+      <pubDate>Sun, 30 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/30/2019-01-02-cces/</guid>
+      <description>Introduction The Cooperative Congressional Election Survey (CCES) is an online survey administred to over 60,000 respondents every 2 years in two waves: pre- and post- the United States Novemeber elections. The survey asks many questions on the respondents’ views on public policy, social issues, and vote choice, and as such is a treasure trove for exploring U.S. public opinion and political behavior. A file with survey responses from voters in the 2016 Presidential election is available for download here.</description>
+    </item>
+    
+  </channel>
+</rss>

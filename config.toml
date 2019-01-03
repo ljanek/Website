@@ -1,0 +1,70 @@
+baseurl = "/"
+title = "Lauren's Website"
+theme = "ghostwriter"
+languageCode = "en-us"
+copyright = "Lauren Klepac"
+disqusShortname = ""
+googleAnalytics = ""
+
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+# Set to true to disable code folding
+    disable_codefolding = true
+# Set to "hide" or "show" all codes by default
+    codefolding_show = "show"
+
+[Privacy]
+
+[Privacy.disqus]
+    disable = true
+
+[Privacy.googleAnalytics]
+    anonymizeIP = true
+    respectDoNotTrack = true
+    useSessionStorage = false
+
+[Author]
+    name = "Lauren's Website"
+    profile = "https://google.com/+XXX"
+
+[Taxonomies]
+    tag = "tags"
+
+[Params]
+    intro = true
+    headline = "Lauren's Website"
+    description = ""
+    github = "https://github.com/ljanek"
+    linkedin = "https://www.linkedin.com/in/lauren-klepac-45b7453/"
+    twitter = "https://twitter.com/imbisstube"
+    email = "ljklep@gmail.com"
+    opengraph = true
+    shareTwitter = false
+    shareFacebook = false
+    shareGooglePlus = false
+    shareLinkedIn = false
+    dateFormat = "Mon, Jan 2, 2006"
+    highlightJsUrl = ""
+    highlightJsLocalUrl = ""
+    exponeaJsUrl = ""
+    exponeaTarget = ""
+    exponeaToken = ""
+    exponeaTrackVisits = false
+
+[Permalinks]
+    post = "/:year/:month/:day/:filename/"
+
+[[menu.main]]
+    name = "Blog"
+    url = "/"
+    weight = 1
+    
+[[menu.main]]
+    name = "Contact"
+    url = "/page/contact/"
+    weight = 3
+
+[[menu.main]]
+    name = "About"
+    url = "/page/about/"
+    weight = 2
