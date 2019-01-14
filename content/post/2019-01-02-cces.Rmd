@@ -54,7 +54,7 @@ cces2$potus16vote <- na_if(cces2$potus16vote, "I'm not sure")
 
 ## Looking at Voters According to their 2016 and 2012 Presidential Preference
 
-One of the interesting questions about the 2016 election is what motivated the group of voters who switched from voting for Barack Obama in 2012 to vote for Donald Trump in 2016. Here I look at this group of voters, as well as the (smaller) group of voters who chose Mitt Romney in 2016 and Hillary Clinton in 2016, and as a baseline, the far more typical voters who chose either the Republican candidate or the Democratic candidate in both the 2012 and 2016 Presidential elections.
+One of the interesting questions about the 2016 election is what motivated the group of voters who switched from voting for Barack Obama in 2012 to voting for Donald Trump in 2016. Here I look at this group of voters, as well as the (smaller) group of voters who chose Mitt Romney in 2016 and Hillary Clinton in 2016, and as a baseline, the far more typical voters who chose either the Republican candidate or the Democratic candidate in both Presidential elections.
 
 ```{r}
 attach(cces2)
@@ -107,7 +107,6 @@ library(reshape2)
 table1216.issues.tidy <- melt(table1216.issues, id.vars = 'potus1216')
 
 # add labels to table - helpful for plot
-library(dplyr)
 table1216.issues.tidy <- table1216.issues.tidy %>%
   mutate(label = paste0(round(value*100), "%"))
 
@@ -143,9 +142,9 @@ p4
 
 ```
 
-Going down the plot, we see that on every issue, the consistent Democratic voters have the highest support for each proposal, which again is not surprising since these are all questions about support for what is considered the liberal position. And of course, consistent Republican voters had the lowest support for each position, although in many cases (36% supporting a ban on assault weapons?) perhaps higher than commonly assumed. 
+Going down the plot, we see that on every issue consistent Democratic voters had the highest support, which is not surprising given that the questions are asking about liberal policy proposals. And of course, consistent Republican voters had the lowest support for each proposal, although in many cases (36% supporting a ban on assault weapons?) perhaps higher than commonly assumed. 
 
-On *most* questions, the Romney-Clinton voters were more likely to hold the liberal position than Obama-Trump voters. On the two immigration questions -- the DACA program and an amnesty for some undocumented workers -- Obama-Trump voters were especially unsupportive, with only 34% and 46% supporting each of the respective proposals. This is probably not unexpected considering an opposition to immigration was one of the strongest theme's of Trump's campaign, and was not especially prominent in Romney's campaign. 
+On *most* questions, the Romney-Clinton voters were actually more likely to hold the liberal position than Obama-Trump voters. On the two immigration questions &mdash; the DACA program and an amnesty for some undocumented workers &mdash; Obama-Trump voters were especially unsupportive, with only 34% and 46% supporting each of the respective proposals. This is probably not unexpected considering an opposition to immigration was one of the strongest theme's of Trump's campaign, and was not especially prominent in Romney's campaign. 
 
-There are two exceptions to the pattern of Romney-Clinton voters being more likely to hold the liberal position than Obama-Trump voters -- raising the minimum wage and an increase in *state legislature* spending on health care, notably two issues that are based more on economic rather than cultural values. Obama-Trump voters' support for increasing state legislature spending on healthcare (57%) is an interesting contrast to their lack of support for the Affordable Care Act (only 28%). This may be because "Obamacare" has become such a polarized issue, where perhaps the voters who switched from voting Democrat to Republican between 2012 and 2016 are inclined to support their (new) party line. In fact, views on this issue track very closely with approval of Obama himself, suggesting the former is almost a proxy for the latter. 
+There are two exceptions to the pattern of Romney-Clinton voters being more likely to hold the liberal position than Obama-Trump voters: raising the minimum wage and an increase in *state legislature* spending on health care. Notably, these are two issues that are based on economic rather than cultural values. Obama-Trump voters' support for increasing state legislature spending on healthcare (57%) is an interesting contrast to their lack of support for the Affordable Care Act (only 28%), considering the similarity of the issues. This may be because "Obamacare" has become such a polarized issue, where perhaps the voters who switched from voting Democrat to Republican between 2012 and 2016 are inclined to support their (new) party line. In fact, views on this issue track very closely with approval of Obama himself, suggesting the former is almost a proxy for the latter. 
 
