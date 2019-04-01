@@ -18,7 +18,8 @@
       <pubDate>Mon, 18 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>/2019/02/18/2019-02-18-mapping-a-senate-race-with-sf-and-ggplot2/</guid>
-      <description>This is a draft post.</description>
+      <description>Introduction I wanted to get some experience mapping with R, so I decided to look at recent election results from my home state of Pennsylvania. First I downloaded results by county from the PA Secretary of State’s website for the 2012 and 2018 Senate races, both of which were won by Democrat Bob Casey.
+I created a table in Excel with results from these two races, as well as the FIPS codes for counties in Pennsylvania and read it into R.</description>
     </item>
     
     <item>

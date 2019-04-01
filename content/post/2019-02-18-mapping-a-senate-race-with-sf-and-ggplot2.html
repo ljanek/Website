@@ -13,4 +13,101 @@ description: ''
 
 
 
-<p>This is a draft post.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>I wanted to get some experience mapping with R, so I decided to look at recent election results from my home state of Pennsylvania. First I downloaded results by county from the <a href="https://electionreturns.pa.gov">PA Secretary of State’s website</a> for the 2012 and 2018 Senate races, both of which were won by Democrat Bob Casey.</p>
+<p>I created a table in Excel with results from these two races, as well as the FIPS codes for counties in Pennsylvania and read it into R. I then downloaded the county shapefiles using the <code>tidycensus</code> package, (Note that this requires a Census API key, which you can get <a href="https://api.census.gov/data/key_signup.html">here</a>.), and joined it to my election results table on the county FIPS code.</p>
+<pre class="r"><code>library(ggplot2)
+library(dplyr)
+library(tigris)
+library(tidycensus)
+library(sf)
+
+# Table with election results and GEOIDs (FIPS codes) for counties
+pa &lt;- read.csv(&quot;PA_by_county_12_16_18.csv&quot;, stringsAsFactors = FALSE)
+
+## Load Census API key (uncomment 2 lines below)
+#api_key &lt;- &quot;YOUR API KEY HERE&quot;
+#census_api_key(api_key)
+
+# Get PA county shapefiles (variable B01003_001 is total population)
+pa_counties &lt;- get_acs(variables = &quot;B01003_001&quot;, geography = &quot;county&quot;, state = &quot;PA&quot;, geometry = TRUE, cache = TRUE)
+
+# Rename variables and join shapefile table with election results table
+pa_counties &lt;- pa_counties %&gt;% select(GEOID, totalpop = estimate, geometry)
+
+# Join shapefile table to election results table; first rename &#39;Fips&#39; column from election table to &#39;GEOID&#39; to match shapefile table 
+pa &lt;- pa %&gt;% rename(GEOID = Fips)
+pa$GEOID &lt;- as.character(pa$GEOID)
+
+pa_joined &lt;- left_join(pa_counties, pa, by = &quot;GEOID&quot;)</code></pre>
+<p>There are many packages and methods available for making choropleth maps in R. I found the tutorial on this blog <a href="https://www.r-spatial.org/r/2018/10/25/ggplot2-sf.html">this blog</a> on making maps with <code>ggplot2</code> and <code>sf</code> especially helpful.</p>
+<p>The code below creates a plot showing Bob Casey’s share of the total vote by county in the 2012 Senate election, where he received 54% of the vote statewide.</p>
+<pre class="r"><code># Code to place county labels: the default position has most of them readable, but I needed to move the label for Columbia County upward -- this uses the st_centroid function to place labels for each county in the geographic center, and then the label for Columbia County is nudged upward.
+pa_joined &lt;- cbind(pa_joined, st_coordinates(st_centroid(pa_joined)))
+pa_joined$nudge_y &lt;- 0.0001
+pa_joined$nudge_y[pa_joined$County == &quot;COLUMBIA&quot;] &lt;- .07
+
+
+p1 &lt;- ggplot(pa_joined, aes(fill = CaseyPct12)) +
+  geom_sf() +
+  scale_fill_gradient2(low = &quot;#a60f14&quot;, mid = &quot;white&quot;, high = &quot;#08579c&quot;, midpoint = 0.5, limits = c(.2, NA)) + 
+  theme_minimal() +
+  coord_sf(datum = NA) + 
+  geom_label(aes(X, Y, label = County), size = 2.5,  nudge_y = pa_joined$nudge_y, show.legend = FALSE) +
+  labs(title = &quot;2012 Pennsylvania Senate Race&quot;, 
+       subtitle = &quot;Bob Casey (D)&#39;s Share of Total Vote By County&quot;, 
+       caption = &quot;Data Source: PA State Board of Elections&quot;,
+       fill = &quot;Casey %&quot;, x = &quot;&quot;, y = &quot;&quot;)
+p1</code></pre>
+<p><img src="/post/2019-02-18-mapping-a-senate-race-with-sf-and-ggplot2_files/figure-html/unnamed-chunk-2-1.png" width="864" /></p>
+<p>In 2018, Bob Casey again won re-election, this time defeating his opponent Lou Barletta with 56% of the vote. Comparing the two maps, his coalition is largely similar, but looking closely it appears that he improved in Allegheny County (Pittsburgh and its inner suburbs), Centre County, home of Penn State University, and the suburburn counties outside of Philadelphia. Meanwhile, he lost support in most of rural central PA outside of Centre County, and in northeastern Pennsylvania, especially Luzerne Couty (Wilkes-Barre).</p>
+<pre class="r"><code>p2 &lt;- ggplot(pa_joined, aes(fill = CaseyPct18)) +
+  geom_sf() +
+  scale_fill_gradient2(low = &quot;#a60f14&quot;, mid = &quot;white&quot;, high = &quot;#08579c&quot;, midpoint = 0.5) + 
+  theme_minimal() +
+  coord_sf(datum = NA) + 
+  geom_label(aes(X, Y, label = County), size = 2.5,  nudge_y = pa_joined$nudge_y, show.legend = FALSE) +
+  labs(title = &quot;2018 Pennsylvania Senate Race&quot;, 
+       subtitle = &quot;Bob Casey (D)&#39;s Share of Total Vote By County&quot;, 
+       caption = &quot;Data Source: PA State Board of Elections&quot;,
+       fill = &quot;Casey %&quot;, x = &quot;&quot;, y = &quot;&quot;)
+p2</code></pre>
+<p><img src="/post/2019-02-18-mapping-a-senate-race-with-sf-and-ggplot2_files/figure-html/unnamed-chunk-3-1.png" width="864" /></p>
+<p>With the map below, we can more easily visualize change in performance between 2012 and 2018. Here it’s apparent that Casey had the most drop-off in support in Luzerne and Carbon Counties, while Chester County is where he gained the most support (notably, Chester is the only county in PA that Hillary Clinton won and Obama did not.)</p>
+<pre class="r"><code>p3 &lt;- ggplot(pa_joined, aes(fill = CaseySwing1218)) +
+  geom_sf() +
+  scale_fill_gradient2(low = &quot;#a60f14&quot;, mid = &quot;white&quot;, high = &quot;#08579c&quot;, midpoint = 0) + 
+  theme_minimal() +
+  coord_sf(datum = NA) + 
+  geom_label(aes(X, Y, label = County), size = 2.5, nudge_y = pa_joined$nudge_y, show.legend = FALSE) +
+  labs(title = &quot;Casey Swing %&quot;, 
+       subtitle = &quot;Bob Casey (D)&#39;s Share of Vote in 2018 Senate Race minus 2012 Senate race&quot;, 
+       caption = &quot;Data Source: PA State Board of Elections&quot;,
+       fill = &quot;Swing %&quot;, x = &quot;&quot;, y = &quot;&quot;)
+p3</code></pre>
+<p><img src="/post/2019-02-18-mapping-a-senate-race-with-sf-and-ggplot2_files/figure-html/unnamed-chunk-4-1.png" width="864" /></p>
+<p>It’s clear from what we’ve seen so far that the trends in Casey’s support between 2012-18 follow a similar pattern seen recently with Democrats across the county: increased support in suburbs of large metro cities and in university towns, and a decrease in support in smaller metro and rural areas. This is of course driven by the pattern of white voters with a college degree becoming more likely to vote Democratic, while white voters without a college degree become more likely to vote Republican.</p>
+<p>Let’s take a look at a map of college education by county in Pennsylvania: below is a map showing the percentage of all adults over age 25 with a Bachelor’s degree or higher level of education. The <code>tidycensus</code> package makes bringing this data into R a seamless process. (A good tutorial written by the developer on using the package is located <a href="https://walkerke.github.io/tidycensus/articles/basic-usage.html">here</a>.)</p>
+<pre class="r"><code>pa_edu &lt;- get_acs(variables = &quot;DP02_0067P&quot;, geography = &quot;county&quot;, state = &quot;PA&quot;, geometry = FALSE, cache = FALSE)
+pa_edu &lt;- pa_edu %&gt;% select(GEOID, pct_bach = estimate)
+
+pa_joined &lt;- left_join(pa_joined, pa_edu, by = &quot;GEOID&quot;)
+
+p4 &lt;- ggplot(pa_joined) +
+  geom_sf(aes(fill = pct_bach)) +
+  scale_fill_viridis_c() +
+  theme_minimal() +
+  coord_sf(datum = NA) + 
+  geom_label(aes(X, Y, label = County), size = 2.5,  nudge_y = pa_joined$nudge_y, show.legend = FALSE, alpha = 0.5) +
+  labs(title = &quot;Educational Attainment by County in Pennsylvania&quot;, 
+       subtitle = &quot;Percent of Adults Age 25+ with Bachelor&#39;s Degree or Higher&quot;,
+       caption = &quot;Source: 2013-2017 5-year ACS via tidycensus R package&quot;,
+       fill = &quot;% Bach or Higher&quot;, x = &quot;&quot;, y = &quot;&quot;)
+p4</code></pre>
+<p><img src="/post/2019-02-18-mapping-a-senate-race-with-sf-and-ggplot2_files/figure-html/unnamed-chunk-5-1.png" width="864" /></p>
+<p>Looking at this map, it’s easy to confirm that the most-educated counties are the ones where Casey’s support grew the most between 2012 and 2018. Chester County, in particular, sticks out as the highest-educated county (with 51% of adults over age 25 with a college degree), and Montgomery, Bucks, Centre, and Allegheny Counties – all places where Casey over-performed compared to prior elections – all have significantly higher than average levels of education.</p>
+<p>Comparing two variables is often easier with a simple scatterplot than with a map, so I plotted the shift in Casey’s vote share versus college-educated percentage below (the points are sized based on the total number of votes cast in 2018, and not all counties are labeled).</p>
+<p><img src="/post/2019-02-18-mapping-a-senate-race-with-sf-and-ggplot2_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
+<p>In the plot above, the trends with higher-education counties mentioned above are apparent, but you can also see that among counties with an average or lower level of education, there’s a significant range in how Casey performed in 2018 compared to 2012. In Luzerne County, Casey’s support fell the most, even though it held up well in counties with similar levels of education in the western and southeastern parts of the state. It is probably relevant that in 2018 his opponent, Lou Barletta, came from the city of Hazleton, which is in Luzerne County. However, this is probably not the only factor, since other Democratic candidates (including Hillary Clinton in 2016) have seen a drop in support in northeastern PA.</p>
+</div>
